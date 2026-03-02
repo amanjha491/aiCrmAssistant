@@ -1,0 +1,50 @@
+# End-to-end API Tests for the AI CRM Assistant
+# You can run these tests using the REST Client extension in VS Code.
+
+@host = http://localhost:3000
+@token = your_jwt_token_here
+
+### 1. Register a new user
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "password123"
+}
+
+### 2. Login to get token
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "testuser@example.com",
+    "password": "password123"
+}
+
+### 3. Valid JSON Extraction
+POST {{host}}/api/chat
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+    "message": "Create lead for Aman Kumar from Faridabad, email: aman@gmail.com, phone: 9876543210"
+}
+
+### 4. Malformed JSON / Missing Required Lead Information
+POST {{host}}/api/chat
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+    "message": "My name is John. Can you add me to the CRM? I live in London."
+}
+
+### 5. Auth Failure (No Token)
+POST {{host}}/api/chat
+Content-Type: application/json
+
+{
+    "message": "Create lead for Aman Kumar from Faridabad, email: aman@gmail.com, phone: 9876543210"
+}
